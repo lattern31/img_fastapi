@@ -14,7 +14,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from users.models import User
 from auth.tasks import EmailTypeEnum, send_email_task
 from common.settings import settings
-from db import get_async_session
+from common.database import get_async_session
 
 
 async def get_user_db(session: AsyncSession = Depends(get_async_session)):

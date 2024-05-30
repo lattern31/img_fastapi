@@ -10,7 +10,7 @@ from images.models import (
     IImageFile,
 )
 from images.repositories import IImageRepository, IImageFileRepository
-from images.exceptions import (
+from common.exceptions import (
     InvalidFileException,
     BadDataException,
     UserIsNotOwner,

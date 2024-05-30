@@ -8,7 +8,7 @@ import PIL.ImageOps
 from common.celery_worker import celery
 from images.models import ImageEditActionEnum, ImageStatusEnum
 from images.deps import get_image_repository
-from db import scoped_session
+from common.database import scoped_session
 
 
 @celery.task

@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from images.models import Image, ImageStatusEnum, IImageFile
 from common.settings import settings
-from db import Base
+from common.database import Base
 
 
 class IImageFileRepository(Protocol):

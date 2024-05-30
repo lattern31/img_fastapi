@@ -5,8 +5,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from auth.manager import current_active_verified_user
-from db import get_async_session
+from auth.auth_config import current_active_verified_user
+from common.database import get_async_session
 from images.deps import get_image_repository
 from images.services import (
     get_image_meta,
@@ -14,7 +14,7 @@ from images.services import (
     create_image,
     edit_image,
 )
-from images.exceptions import (
+from common.exceptions import (
     InvalidFileException,
     ImageIsStillProcessing,
     BadDataException,

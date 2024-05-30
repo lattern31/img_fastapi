@@ -2,9 +2,9 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from auth.manager import auth_backend, fastapi_users
+from auth.auth_config import auth_backend, fastapi_users
 from images.router import router as image_router
-from db import create_db_and_tables
+from common.database import create_db_and_tables
 from users.schemas import UserCreate, UserRead, UserUpdate
 
 

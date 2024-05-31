@@ -22,11 +22,11 @@ This API built with FastAPI provides a robust solution for handling and manipula
 
 ### Roadmap
 
+- [x] Tests on pytest
 - [ ] Caching on redis
 - [ ] Migrations via alembic
 - [ ] Searching, filtering, pagination of images
 - [ ] Thumbnails via celery
-- [ ] Tests on pytest
 
 ### Getting Started
 

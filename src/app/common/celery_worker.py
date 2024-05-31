@@ -1,5 +1,5 @@
 from celery import Celery
-from common.settings import settings
+from app.common.settings import settings
 
 celery = Celery(
     "tasks",

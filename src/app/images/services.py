@@ -2,21 +2,22 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from common.settings import settings
-from images.models import (
+from app.common.settings import settings
+from app.images.models import (
     ImageEditActionEnum,
     Image,
     ImageStatusEnum,
     IImageFile,
 )
-from images.repositories import IImageRepository, IImageFileRepository
-from images.exceptions import (
+from app.images.repositories import IImageRepository, IImageFileRepository
+from app.images.exceptions import (
+    ImageNotFoundException,
+    UserIsNotOwnerException,
+    ImageIsStillProcessingException,
     InvalidFileException,
-    BadDataException,
-    UserIsNotOwner,
-    ImageIsStillProcessing,
+    ImageTooBigException
 )
-from images.tasks import edit_image_task
+from app.images.tasks import edit_image_task
 
 
 async def get_image_meta(
@@ -27,11 +28,9 @@ async def get_image_meta(
 ) -> Image:
     image = await repository.get_meta(session=session, id_=image_id)
     if image is None:
-        raise BadDataException(errors={"image_id": ["Image does not exist"]})
+        raise ImageNotFoundException(image_id)
     if image.owner_id != owner_id:
-        raise UserIsNotOwner(
-            errors={"image_id": ["User is not an owner of image"]}
-        )
+        raise UserIsNotOwnerException()
     return image
 
 
@@ -40,9 +39,7 @@ async def get_image_file(
     image: Image,
 ) -> bytes:
     if image.status == ImageStatusEnum.PROCESSING:
-        raise ImageIsStillProcessing(
-            errors={"image_status": ["Image is still processing"]}
-        )
+        raise ImageIsStillProcessingException()
     image_bytes = await repository.get(image)
     return image_bytes
 
@@ -54,20 +51,15 @@ async def create_image(
     title: str,
     owner_id: UUID,
 ) -> UUID:
-    if not file:
-        raise InvalidFileException(errors={"file": ["File was not uploaded"]})
-    if not file.content_type or file.content_type.partition("/")[0] != "image":
-        raise InvalidFileException(errors={"file": ["File is not an image"]})
-    if file.size is None:
-        raise InvalidFileException(errors={"file": ["File has no size"]})
+    if (
+        not file or
+        not file.size or
+        not file.content_type or 
+        file.content_type.partition("/")[0] != "image"
+    ):
+        raise InvalidFileException()
     if file.size / (1024 * 1024) > settings.MAX_FILE_SIZE_MB:
-        raise InvalidFileException(
-            errors={
-                "file": [
-                    f"File can't be more than {settings.MAX_FILE_SIZE_MB}MB"
-                ]
-            }
-        )
+        raise ImageTooBigException()
     image = Image(title=title, owner_id=owner_id, status=ImageStatusEnum.DONE)
     await repository.create_meta(session, image)
     await repository.file_repository.save(image, file)

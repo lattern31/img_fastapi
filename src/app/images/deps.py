@@ -1,4 +1,4 @@
-from images.repositories import (
+from app.images.repositories import (
     IImageRepository,
     ImageRepository,
     ImageFileRepository,

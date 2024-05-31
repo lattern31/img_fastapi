@@ -2,7 +2,8 @@ from asyncio import current_task
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.declarative import declarative_base 
+from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_scoped_session,
@@ -10,19 +11,19 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from common.settings import settings
+from app.common.settings import settings
 
 
-def _declarative_constructor(self, **kwargs):
-    """Don't raise a TypeError for unknown attribute names."""
-    cls_ = type(self)
-    for k in kwargs:
-        if not hasattr(cls_, k):
-            continue
-        setattr(self, k, kwargs[k])
+class Base(DeclarativeBase):
+    def __init__(self, **kwargs):
+        """Don't raise a TypeError for unknown attribute names."""
+        cls_ = type(self)
+        for k in kwargs:
+            if not hasattr(cls_, k):
+                continue
+            setattr(self, k, kwargs[k])
 
 
-Base = declarative_base(constructor=_declarative_constructor)
 
 
 engine = create_async_engine(settings.ASYNC_DB_URI)

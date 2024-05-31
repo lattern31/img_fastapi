@@ -5,24 +5,25 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from auth.manager import current_active_verified_user
-from db import get_async_session
-from images.deps import get_image_repository
-from images.services import (
+from app.auth.manager import current_active_verified_user
+from app.db import get_async_session
+from app.images.deps import get_image_repository
+from app.images.services import (
     get_image_meta,
     get_image_file,
     create_image,
     edit_image,
 )
-from images.exceptions import (
+from app.images.exceptions import (
+    ImageNotFoundException,
+    UserIsNotOwnerException,
+    ImageIsStillProcessingException,
     InvalidFileException,
-    ImageIsStillProcessing,
-    BadDataException,
-    UserIsNotOwner,
+    ImageTooBigException
 )
-from images.models import Image
-from images.schemas import ImageCreateSchema, ImageReadSchema, ImageEditSchema
-from users.models import User
+from app.images.models import Image
+from app.images.schemas import ImageCreateSchema, ImageReadSchema, ImageEditSchema
+from app.users.models import User
 
 
 router = APIRouter()
@@ -41,13 +42,13 @@ async def valid_image_id(
             image_id=image_id,
             owner_id=user.id,
         )
-    except BadDataException as e:
+    except ImageNotFoundException as e:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=e.errors
+            status_code=status.HTTP_404_NOT_FOUND, detail=e.message
         )
-    except UserIsNotOwner as e:
+    except UserIsNotOwnerException as e:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDEN, detail=e.errors
+            status_code=status.HTTP_403_FORBIDEN, detail=e.message
         )
     return image
 
@@ -67,9 +68,9 @@ async def create_image_handle(
             title=schema.title,
             owner_id=user.id,
         )
-    except InvalidFileException as e:
+    except (InvalidFileException, ImageTooBigException) as e:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=e.errors
+            status_code=status.HTTP_400_BAD_REQUEST, detail=e.message
         )
     return {"image_id": image_id}
 
@@ -83,9 +84,9 @@ async def get_image_handler(
         image_bytes = await get_image_file(
             image_repository.file_repository, image
         )
-    except ImageIsStillProcessing as e:
+    except ImageIsStillProcessingException as e:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=e.errors
+            status_code=status.HTTP_400_BAD_REQUEST, detail=e.message
         )
     return StreamingResponse(
         io.BytesIO(image_bytes), media_type=image.content_type

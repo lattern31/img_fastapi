@@ -3,13 +3,13 @@ version: '3.9'
 services:
   app:
     container_name: img_fastapi
-    build: src/
-    command: uvicorn app:app --host 0.0.0.0 --port 8000 --reload
+    build: ./src
+    command: uvicorn app.app:app --host 0.0.0.0 --port 8000 --reload
     env_file: '.env'
     environment:
       DB_HOST: db
     volumes:
-      - ./src/app/:/code/
+      - ./src/:/app/
       - img_dir:${IMAGE_DIR_PATH}
     networks:
       - backend
@@ -54,10 +54,10 @@ services:
   celery_worker:
     container_name: img_fastapi_celery
     build: ./src
-    command: celery -A common.celery_worker:celery worker --loglevel=info
+    command: celery -A app.common.celery_worker:celery worker --loglevel=info
     env_file: '.env'
     volumes:
-      - ./src/app/:/code/
+      - ./src/:/app/
       - img_dir:${IMAGE_DIR_PATH}
     networks:
       - backend
@@ -67,10 +67,10 @@ services:
   flower: 
     container_name: img_fastapi_flower
     build: ./src
-    command: celery -A common.celery_worker:celery flower
+    command: celery -A app.common.celery_worker:celery flower
     env_file: '.env'
     volumes:
-      - ./src/app/:/code/
+      - ./src/:/app/
     ports:
       - 5555:5555
     networks:

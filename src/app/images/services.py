@@ -2,22 +2,22 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from common.settings import settings
-from images.models import (
+from app.common.settings import settings
+from app.images.models import (
     ImageEditActionEnum,
     Image,
     ImageStatusEnum,
     IImageFile,
 )
-from images.repositories import IImageRepository, IImageFileRepository
-from images.exceptions import (
+from app.images.repositories import IImageRepository, IImageFileRepository
+from app.images.exceptions import (
     ImageNotFoundException,
     UserIsNotOwnerException,
     ImageIsStillProcessingException,
     InvalidFileException,
     ImageTooBigException
 )
-from images.tasks import edit_image_task
+from app.images.tasks import edit_image_task
 
 
 async def get_image_meta(

@@ -11,10 +11,10 @@ from fastapi_users.authentication import (
 from fastapi_users.db import SQLAlchemyUserDatabase
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from users.models import User
-from auth.tasks import EmailTypeEnum, send_email_task
-from common.settings import settings
-from db import get_async_session
+from app.users.models import User
+from app.auth.tasks import EmailTypeEnum, send_email_task
+from app.common.settings import settings
+from app.db import get_async_session
 
 
 async def get_user_db(session: AsyncSession = Depends(get_async_session)):

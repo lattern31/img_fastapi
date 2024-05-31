@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from uuid import UUID
 
-from common.settings import settings
+from app.common.settings import settings
 
 
 @dataclass(eq=False)

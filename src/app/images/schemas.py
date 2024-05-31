@@ -4,7 +4,7 @@ from uuid import UUID
 from fastapi import File, UploadFile
 from pydantic import BaseModel, Field
 
-from images.models import ImageStatusEnum, ImageEditActionEnum
+from app.images.models import ImageStatusEnum, ImageEditActionEnum
 
 
 class BaseImage(BaseModel):

@@ -5,25 +5,25 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from auth.manager import current_active_verified_user
-from db import get_async_session
-from images.deps import get_image_repository
-from images.services import (
+from app.auth.manager import current_active_verified_user
+from app.db import get_async_session
+from app.images.deps import get_image_repository
+from app.images.services import (
     get_image_meta,
     get_image_file,
     create_image,
     edit_image,
 )
-from images.exceptions import (
+from app.images.exceptions import (
     ImageNotFoundException,
     UserIsNotOwnerException,
     ImageIsStillProcessingException,
     InvalidFileException,
     ImageTooBigException
 )
-from images.models import Image
-from images.schemas import ImageCreateSchema, ImageReadSchema, ImageEditSchema
-from users.models import User
+from app.images.models import Image
+from app.images.schemas import ImageCreateSchema, ImageReadSchema, ImageEditSchema
+from app.users.models import User
 
 
 router = APIRouter()

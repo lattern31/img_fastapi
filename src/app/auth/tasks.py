@@ -3,8 +3,8 @@ import smtplib
 import ssl
 from email.message import EmailMessage
 
-from common.celery_worker import celery
-from common.settings import settings
+from app.common.celery_worker import celery
+from app.common.settings import settings
 
 
 class EmailTypeEnum(StrEnum):

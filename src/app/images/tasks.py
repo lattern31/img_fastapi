@@ -5,10 +5,10 @@ from uuid import UUID
 import PIL.Image
 import PIL.ImageOps
 
-from common.celery_worker import celery
-from images.models import ImageEditActionEnum, ImageStatusEnum
-from images.deps import get_image_repository
-from db import scoped_session
+from app.common.celery_worker import celery
+from app.images.models import ImageEditActionEnum, ImageStatusEnum
+from app.images.deps import get_image_repository
+from app.db import scoped_session
 
 
 @celery.task
